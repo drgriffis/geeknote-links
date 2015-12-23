@@ -32,7 +32,8 @@ class Links:
             mf.write(str.format("pull{0} :\n\t", i))
             mf.write(str.format("geeknote find --search \"{0}\" --notebooks \"{1}\"\n\t", l.note, l.notebook))
             mf.write(str.format("geeknote show 1 > edump.tmp\n\t"))
-            mf.write(str.format("python processEDump.py > {0}\n", l.filepath))
+            mf.write(str.format("python processEDump.py > {0}\n\t", l.filepath))
+            mf.write(str.format("rm edump.tmp\n"))
 
     def getLinkNum(self, fpath):
         return self.revlinks[fpath]
