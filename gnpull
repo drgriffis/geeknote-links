@@ -1,0 +1,57 @@
+#!/bin/bash
+
+usage()
+{
+cat << EOF
+Usage (pull down Evernote copy of local file):
+    `basename $0` FILE
+
+Alternate usage (pull down unlinked Evernote note):
+    `basename $0` -t TITLE -b NOTEBOOK
+EOF
+}
+
+filename=
+title=
+notebook=
+while getopts "f:t:b:" OPTION; do
+    case $OPTION in
+        f)
+            filename="`pwd -P`/$OPTARG"
+            ;;
+        t)
+            title=$OPTARG
+            ;;
+        b)
+            notebook=$OPTARG
+            ;;
+    esac
+done
+
+# if nothing entered, print usage
+if [ -z "$1" ] && [ -z "$title" ] && [ -z "$notebook" ]; then
+    usage
+    exit
+fi
+
+# if just refreshing a local note, pull it down
+if [ -z "$title" ] && [ -z "$notebook" ]; then
+    source _getlink.sh
+    make "pull${targetlink}"
+# if pulling a new note, grab it
+elif [ ! -z "$title" ] && [ ! -z "$notebook" ]; then
+    cd $GEEKNOTE/links
+	geeknote find --search "$title" --notebooks "$notebook"
+	geeknote show 1 > edump.tmp
+    if [ -z "$filename" ]; then
+        python processEDump.py
+    else
+        python processEDump.py > "$filename"
+        echo "$filename|$notebook|$title" >> links
+        python links.py updatemf
+    fi
+# otherwise, bad entry; print usage
+else
+    usage
+    exit
+fi

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+usage() {
+cat << EOF
+Usage: `basename $0` FILE
+      => pushes contents of FILE to linked note in Evernote
+
+  OR: `basename $0` -all
+      => pushes contents of all linked files in current directory to Evernote.
+EOF
+}
+
+## TODO: better option and argument handling
+## TODO: hook into links for listin fponly listing of local linked files
+
+if [ "$1" = "-all" ]; then
+    echo Not implemented yet!
+elif [ ! -z "$1" ]; then
+    source _getlink.sh
+    make "push${targetlink}"
+else
+    usage
+fi

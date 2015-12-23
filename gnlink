@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# special case; if "edit", drop into editing links file
+if [[ "$1" = "edit" ]]
+then
+    cd ~/.scripts/geeknote/links
+    $EDITOR links
+    python links.py updatemf
+    exit 0
+fi
+
+filepath=
+title=
+notebook=
+
+usage()
+{
+cat << EOF
+Usage:
+    `basename $0` -f FILE -t TITLE -b NOTEBOOK
+
+Alternate usage (to edit links directly):
+    `basename $0` edit
+EOF
+}
+
+while getopts "f:t:b:" OPTION; do
+    case $OPTION in
+        f)
+            filepath=`readlink -f "$OPTARG"`
+            ;;
+        t)
+            title=$OPTARG
+            ;;
+        b)
+            notebook=$OPTARG
+            ;;
+    esac
+done
+
+if [[ -z $filepath ]] || [[ -z $title ]] || [[ -z $notebook ]]
+then
+    usage
+    exit 1
+fi
+
+geeknote create --title "$title" --notebook "$notebook" --content "$filepath"
+
+cd ~/.scripts/geeknote/links
+echo "$filepath|$notebook|$title" >> links
+
+python links.py updatemf

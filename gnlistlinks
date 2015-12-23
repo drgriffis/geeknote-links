@@ -1,0 +1,9 @@
+#!/bin/bash
+if [ -z $1 ]; then
+    trgdir="`pwd -P`"
+else
+    trgdir="`readlink -f $1`"
+fi
+
+cd ~/.scripts/geeknote/links
+python links.py listin "$trgdir"
