@@ -1,9 +1,11 @@
 #!/bin/bash
+source config
+
 if [ -z $1 ]; then
     trgdir="`pwd -P`"
 else
-    trgdir="`readlink -f $1`"
+    trgdir="$(abspath "$1")"
 fi
 
-cd ~/.scripts/geeknote/links
-python links.py listin "$trgdir"
+cd $DIR
+$PYTHON links.py listin "$trgdir"

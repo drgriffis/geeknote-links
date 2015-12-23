@@ -1,7 +1,8 @@
 #!/bin/bash
+source config
 
 # get the full path to the input file
-targetfile=`readlink -f $1`
+targetfile=$(abspath "$1")
 
-cd ~/.scripts/geeknote/links
-targetlink=`python links.py getnum $targetfile`
+cd $DIR
+targetlink=`$PYTHON links.py getnum $targetfile`

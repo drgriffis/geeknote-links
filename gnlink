@@ -1,11 +1,12 @@
 #!/bin/bash
+source config
 
 # special case; if "edit", drop into editing links file
 if [[ "$1" = "edit" ]]
 then
-    cd ~/.scripts/geeknote/links
-    $EDITOR links
-    python links.py updatemf
+    cd $DIR
+    $GNEDITOR links
+    $PYTHON links.py updatemf
     exit 0
 fi
 
@@ -27,7 +28,7 @@ EOF
 while getopts "f:t:b:" OPTION; do
     case $OPTION in
         f)
-            filepath=`readlink -f "$OPTARG"`
+            filepath=$(abspath "$OPTARG")
             ;;
         t)
             title=$OPTARG
@@ -44,9 +45,9 @@ then
     exit 1
 fi
 
-geeknote create --title "$title" --notebook "$notebook" --content "$filepath"
+$GEEKNOTE create --title "$title" --notebook "$notebook" --content "$filepath"
 
-cd ~/.scripts/geeknote/links
+cd $DIR
 echo "$filepath|$notebook|$title" >> links
 
-python links.py updatemf
+$PYTHON links.py updatemf

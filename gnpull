@@ -1,4 +1,5 @@
 #!/bin/bash
+source config
 
 usage()
 {
@@ -40,15 +41,15 @@ if [ -z "$title" ] && [ -z "$notebook" ]; then
     make "pull${targetlink}"
 # if pulling a new note, grab it
 elif [ ! -z "$title" ] && [ ! -z "$notebook" ]; then
-    cd $GEEKNOTE/links
-	geeknote find --search "$title" --notebooks "$notebook"
-	geeknote show 1 > edump.tmp
+    cd $DIR
+	$GEEKNOTE find --search "$title" --notebooks "$notebook"
+	$GEEKNOTE show 1 > edump.tmp
     if [ -z "$filename" ]; then
-        python processEDump.py
+        $PYTHON processEDump.py
     else
-        python processEDump.py > "$filename"
+        $PYTHON processEDump.py > "$filename"
         echo "$filename|$notebook|$title" >> links
-        python links.py updatemf
+        $PYTHON links.py updatemf
     fi
 # otherwise, bad entry; print usage
 else
