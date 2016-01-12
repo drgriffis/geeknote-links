@@ -1,6 +1,20 @@
 #!/bin/bash
 source config
 
+usage()
+{
+cat << EOF
+Usage:
+    `basename $0` -f FILE -t TITLE -b NOTEBOOK [OPTIONS]
+
+Options:
+    -e   link FILE to existing note
+
+Alternate usage (to edit links directly):
+    `basename $0` edit
+EOF
+}
+
 # special case; if "edit", drop into editing links file
 if [[ "$1" = "edit" ]]
 then
@@ -13,19 +27,8 @@ fi
 filepath=
 title=
 notebook=
-
-usage()
-{
-cat << EOF
-Usage:
-    `basename $0` -f FILE -t TITLE -b NOTEBOOK
-
-Alternate usage (to edit links directly):
-    `basename $0` edit
-EOF
-}
-
-while getopts "f:t:b:" OPTION; do
+createnew=true
+while getopts "f:t:b:e" OPTION; do
     case $OPTION in
         f)
             filepath=$(abspath "$OPTARG")
@@ -36,6 +39,9 @@ while getopts "f:t:b:" OPTION; do
         b)
             notebook=$OPTARG
             ;;
+        e)
+            createnew=false
+            ;;
     esac
 done
 
@@ -45,7 +51,18 @@ then
     exit 1
 fi
 
-$GEEKNOTE create --title "$title" --notebook "$notebook" --content "$filepath"
+if [ $createnew = true ]; then
+    echo "Creating new note"
+    echo -e "\tName: $title"
+    echo -e "\tNotebook: $notebook"
+    echo -e "\tContents: $filepath"
+    $GEEKNOTE create --title "$title" --notebook "$notebook" --content "$filepath"
+else
+    echo "Linked to existing note"
+    echo -e "\tName: $title"
+    echo -e "\tNotebook: $notebook"
+    echo -e "\tFile: $filepath"
+fi
 
 cd $DIR
 echo "$filepath|$notebook|$title" >> links
